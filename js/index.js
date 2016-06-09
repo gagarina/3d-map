@@ -60,6 +60,7 @@ function init() {
     document.addEventListener('mousemove', onDocumentMouseMove, false);
     document.addEventListener('mouseup', onDocumentMouseUp, false);
     document.addEventListener('mousewheel', onDocumentMouseWheel, false);
+    document.addEventListener('click', onDocumentMouseClick, false);
     //document.addEventListener( 'DOMMouseScroll', onDocumentMouseWheel, false);
 
     document.addEventListener('dragover', function(event) {
@@ -99,10 +100,11 @@ function init() {
     }, false);
 
     window.addEventListener('resize', onWindowResize, false);
+    resizeLoad();
 }
 
 function onWindowResize() {
-
+    debugger;
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
@@ -110,7 +112,6 @@ function onWindowResize() {
 }
 
 function onDocumentMouseDown(event) {
-
     event.preventDefault();
     isUserInteracting = true;
 
@@ -119,8 +120,12 @@ function onDocumentMouseDown(event) {
 
     onPointerDownLon = lon;
     onPointerDownLat = lat;
+}
 
+function onDocumentMouseClick(){
+    event.preventDefault();
     raycaster.setFromCamera(mouse, camera);
+
     var intersects = raycaster.intersectObjects(sprites);
 
     var INTERSECTED;
@@ -152,11 +157,11 @@ function onDocumentMouseUp(event) {
 }
 
 function onDocumentMouseWheelStop() {
-    
-    if(event.wheelDeltaY && camera.fov == 30){
-        camera.fov -= event.wheelDeltaY * -0.05; 
-    }else if(event.wheelDeltaY && camera.fov == 108){
-        camera.fov -= event.wheelDeltaY * -0.05; 
+
+    if(event.wheelDeltaY && camera.fov < 36){
+        camera.fov -= event.wheelDeltaY * -0.05;
+    }else if(event.wheelDeltaY && camera.fov >= 108){
+        camera.fov -= event.wheelDeltaY * -0.05;
     }
 }
 
@@ -165,16 +170,14 @@ function onDocumentMouseWheel(event) {
     // WebKit
     if (event.wheelDeltaY && camera.fov > 30 && camera.fov < 108) {
         camera.fov -= event.wheelDeltaY * 0.05;
-        onDocumentMouseWheelStop();
     // Opera / Explorer 9
     } else if (event.wheelDelta && camera.fov > 30 && camera.fov < 108) {
         camera.fov -= event.wheelDelta * 0.05;
-        onDocumentMouseWheelStop();
     // Firefox
     } else if (event.detail && camera.fov > 30 && camera.fov < 108) {
         camera.fov += event.detail * 0.05;
-        onDocumentMouseWheelStop();
     }
+    onDocumentMouseWheelStop();
     camera.updateProjectionMatrix();
 }
 
@@ -206,7 +209,7 @@ function goToFragment(fragment) {
     textureLoader.load(
         // resource URL
         fragment.URL,
-        
+
         // Function when resource is loaded
         function(texture) {
             clearSprites();
@@ -216,7 +219,7 @@ function goToFragment(fragment) {
             mesh = new THREE.Mesh(geometry, material);
             for (i = 0; i < fragment.transitions.length; i++) {
                 var t = fragment.transitions[i];
-                
+
                 var sprite = new THREE.Sprite(
                     new THREE.SpriteMaterial({
                         map: arrows[t.arrowType],
@@ -250,11 +253,11 @@ function goToFragment(fragment) {
 }
 
 function update() {
-    /*if ( isUserInteracting === false) {
-  
-      lon += 5.0; //for auto rotation
-  
-    }*/
+    // if ( isUserInteracting === false) {
+
+    //   lon += 5.0; //for auto rotation
+
+    // }
 
     lat = Math.max(- 85, Math.min(85, lat));
     phi = THREE.Math.degToRad(90 - lat);
@@ -284,4 +287,7 @@ function update() {
     }
 
         renderer.render(scene, camera);
-}
+};
+function resizeLoad() {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+};
