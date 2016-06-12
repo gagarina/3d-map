@@ -104,7 +104,6 @@ function init() {
 }
 
 function onWindowResize() {
-    debugger;
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
